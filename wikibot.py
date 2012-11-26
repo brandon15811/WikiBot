@@ -35,11 +35,12 @@ def main(argv):
             name = a.strip()
 
     last_checked = defaultdict(int)
+    first_run = True
 
     while True:
         for wiki in args:
             d = feedparser.parse(wiki)
-            time_last_checked = time.time()
+
             for entry in d.entries:
                 # We don't care about certain namespaces.
                 if entry.title.strip().startswith(_ignored_namespaces):
@@ -48,7 +49,7 @@ def main(argv):
                 # See if this change has occured since the last time
                 # we checked this page.
                 updated = time.mktime(entry.updated_parsed)
-                if last_checked[wiki] != 0 and updated > last_checked[wiki]:
+                if not first_run and updated > last_checked[wiki]:
                     line = []
                     line.append('[{0}]'.format(name))
                     line.append('Edit by {0} to {1} ->'.format(
@@ -64,8 +65,11 @@ def main(argv):
                         'payload': ' '.join(line)
                     })
 
-            last_checked[wiki] = time_last_checked
+            last_checked[wiki] = max(
+                time.mktime(e.updated_parsed) for e in d.entries
+            )
 
+        first_run = False
         time.sleep(frequency)
 
 
