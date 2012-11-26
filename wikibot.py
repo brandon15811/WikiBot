@@ -11,10 +11,6 @@ import feedparser
 _ignored_namespaces = ('User:', 'Talk:', 'User talk:')
 
 
-def _clean_li(li):
-    return ' '.join(li.text_content().encode('ascii', 'ignore').split())
-
-
 def main(argv):
     try:
         opts, args = getopt.gnu_getopt(argv[1:], '', [
