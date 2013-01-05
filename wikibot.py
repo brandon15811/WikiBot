@@ -7,16 +7,17 @@ from collections import defaultdict
 
 import requests
 import feedparser
+import json
 
 _ignored_namespaces = ('User:', 'Talk:', 'User talk:')
-
 
 def main(argv):
     try:
         opts, args = getopt.gnu_getopt(argv[1:], '', [
             'notifico=',
             'frequency=',
-            'name='
+            'name=',
+            'category='
         ])
     except getopt.GetoptError as e:
         print(str(e))
@@ -33,6 +34,8 @@ def main(argv):
             frequency = int(a.strip())
         elif o == '--name':
             name = a.strip()
+        elif o == '--category':
+            category = a.strip()
 
     last_checked = defaultdict(int)
     first_run = True
@@ -45,6 +48,21 @@ def main(argv):
                 # We don't care about certain namespaces.
                 if entry.title.strip().startswith(_ignored_namespaces):
                     continue
+                try:
+                    pages = []
+
+                    categoryjson = requests.get(wiki.split('index.php', 1)[0] +
+                    "api.php?action=query&list=categorymembers&" +
+                    "cmtitle=Category:" + category +
+                    "&cmprop=title&format=json").json['query']['categorymembers']
+
+                    for page in categoryjson:
+                        pages.append(page['title'])
+
+                    if not entry.title.strip() in pages:
+                        continue
+                except NameError:
+                    pass
 
                 # See if this change has occured since the last time
                 # we checked this page.
