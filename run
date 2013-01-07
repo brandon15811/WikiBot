@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ -z "$CATEGORY"]
+if [ -z "$CATEGORY" ]
 then
     python /home/dotcloud/current/wikibot.py --notifico "$NOTIFICO" "$WIKI_URL"
 else

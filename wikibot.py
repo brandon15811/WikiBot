@@ -54,7 +54,7 @@ def main(argv):
                     categoryjson = requests.get(wiki.split('index.php', 1)[0] +
                     "api.php?action=query&list=categorymembers&" +
                     "cmtitle=Category:" + category +
-                    "&cmprop=title&format=json").json['query']['categorymembers']
+                    "&cmprop=title&format=json").json()['query']['categorymembers']
 
                     for page in categoryjson:
                         pages.append(page['title'])
